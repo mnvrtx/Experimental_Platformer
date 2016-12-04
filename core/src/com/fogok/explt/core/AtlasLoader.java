@@ -20,6 +20,12 @@ public class AtlasLoader {
     //namesTextureRegions
 
     public static final int OBJ_MAIN_CUBE = 0;
+    public static final int OBJ_MAIN_CUBE1 = 1;
+    public static final int OBJ_MAIN_CUBE2 = 2;
+    public static final int OBJ_MAIN_CUBE3 = 3;
+    public static final int OBJ_BLICK = 4;
+    public static final int OBJ_J = 5;
+    public static final int OBJ_JACT = 6;
 
     ///
 
