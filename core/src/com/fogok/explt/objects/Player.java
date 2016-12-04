@@ -232,6 +232,7 @@ public class Player {
         player.setRotation((int) Math.toDegrees((double) body.getAngle()));
         player.draw(batch);
 
+
         if (!isDead){
             drawBlicks(batch);
             handleControl();
