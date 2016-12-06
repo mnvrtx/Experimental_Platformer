@@ -3,6 +3,7 @@ package com.fogok.explt;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +14,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.fogok.explt.core.Controller;
 import com.fogok.explt.core.Handler;
+import com.fogok.explt.core.SoundCore;
+import com.fogok.explt.core.StartScreen;
+import com.fogok.explt.objects.StoryNarrator;
+import com.fogok.explt.objects.UI;
 import com.fogok.explt.utils.Prefers;
 import com.fogok.explt.utils.ResHelper;
 
@@ -30,6 +35,7 @@ public class Main extends ApplicationAdapter {
                        , DEBUG_VALUE2 = "";
 
     private Handler handler;
+    private StartScreen startScreen;
     private Sprite back;
 
 
@@ -47,12 +53,19 @@ public class Main extends ApplicationAdapter {
         back.setBounds(ResHelper.getX(), ResHelper.getY(), ResHelper.getW(), ResHelper.getH());
         initCamera();
         Prefers.initPrefs();
-//        Prefers.putInt(Prefers.KeySavePoint, 0);
-//        Prefers.putInt(Prefers.KeyStateCube, 0);
+        SoundCore.init();
+        UI.initializate();
+
+        Prefers.putInt(Prefers.KeySavePoint, 0);
+        Prefers.putInt(Prefers.KeyStateCube, 0);
+//        Prefers.putInt(Prefers.KeyStateStory, 0);
+
+        StoryNarrator.init(Prefers.getInt(Prefers.KeyStateStory));
         ///
 
         //initCore
         handler = new Handler();
+        startScreen = new StartScreen(handler.getAtlasLoader());
         ///
 	}
 
@@ -63,20 +76,30 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
-        backBatch.begin();
-        back.draw(backBatch);
-        backBatch.end();
 
-        physicCamera.update();
-        batch.setProjectionMatrix(physicCamera.combined);
-		batch.begin();
-        ///
 
-        handler.handle(batch, controllerBatch);
-
-        ///
-		batch.end();
-        Controller.drawControl(controllerBatch);
+        if (startScreen.getStart()){
+            backBatch.begin();
+            back.draw(backBatch);
+            backBatch.end();
+            ///
+            physicCamera.update();
+            batch.setProjectionMatrix(physicCamera.combined);
+            batch.begin();
+            handler.handle(batch, controllerBatch);
+            batch.end();
+            ///
+            controllerBatch.begin();
+            Controller.drawControl(controllerBatch, handler.getIsDrawLeftRight(), handler.getIsDrawUp());
+            if (!startScreen.isEndedH())
+                startScreen.draw(controllerBatch);
+        }
+        else{
+            controllerBatch.begin();
+            startScreen.draw(controllerBatch);
+        }
+        StoryNarrator.drawAndNarrate(controllerBatch);
+        controllerBatch.end();
 
 
         mdT = Math.min(Gdx.graphics.getDeltaTime() / 0.016f, 2.5f);
@@ -142,6 +165,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         Controller.dispose();
+        startScreen.dispose();
         batch.dispose();
         backBatch.dispose();
         controllerBatch.dispose();

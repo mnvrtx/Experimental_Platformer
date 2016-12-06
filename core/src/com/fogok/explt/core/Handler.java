@@ -77,6 +77,18 @@ public class Handler {
         position.y += (posY - position.y) * lerp * Gdx.graphics.getDeltaTime();
     }
 
+    public AtlasLoader getAtlasLoader() {
+        return atlasLoader;
+    }
+
+    public boolean getIsDrawLeftRight(){
+        return player.getIsDrawLeftRight();
+    }
+
+    public boolean getIsDrawUp(){
+        return player.getIsDrawUp();
+    }
+
     public void dispose() {
         atlasLoader.dispose();
         tiledMapDrawer.dispose();

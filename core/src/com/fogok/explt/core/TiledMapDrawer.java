@@ -130,7 +130,7 @@ public class TiledMapDrawer {
         ONECUBESIZE = 90 * finCff;
     }
 
-    private static final Pos spawnPonints[] = new Pos[] {new Pos(450, 4230), new Pos(25020, 3420), new Pos(540, 2430), new Pos(25020, 1350), new Pos(25290, 630)};
+    private static final Pos spawnPonints[] = new Pos[] {new Pos(450, 4230), new Pos(25020, 3420), new Pos(540, 2340), new Pos(25020, 1350), new Pos(540, 810), new Pos(25290, 630), new Pos(0, 0)};
 
     public static int SPAWNPNT;
     public static void refreshSpawnPoint(){

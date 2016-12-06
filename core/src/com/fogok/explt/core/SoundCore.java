@@ -1,5 +1,7 @@
 package com.fogok.explt.core;
 
+import com.fogok.explt.utils.Prefers;
+
 /**
  * Created by FOGOK on 01.12.2016 11:20.
  * Если ты это читаешь, то знай, что этот код хуже
@@ -8,11 +10,12 @@ package com.fogok.explt.core;
  */
 public class SoundCore {
 
-    public SoundCore() {
+    public static boolean MUSIC_ENABLED;
+    public static boolean SOUND_ENABLED;
 
+    public static void init(){
+        MUSIC_ENABLED = Prefers.getBool(Prefers.KeyMusicEnabled, true);
+        SOUND_ENABLED = Prefers.getBool(Prefers.KeySoundEnabled, true);
     }
 
-    public void dispose() {
-
-    }
 }

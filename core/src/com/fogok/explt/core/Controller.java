@@ -42,6 +42,7 @@ public class Controller {
         jT1 = new Rectangle(otst, otst, size, size);
         jT2 = new Rectangle(otst * 4f + size, otst, size, size);
         jT3 = new Rectangle(Gdx.graphics.getWidth() - otst - size, otst, size, size);
+        isTestJump = true;
 
 //        jT1.setBounds();
     }
@@ -66,40 +67,42 @@ public class Controller {
         lastJ3 = j3;
     }
 
-    public static void drawControl(SpriteBatch batch){
-        hhandleControl();
+    public static void drawControl(SpriteBatch batch, boolean drawLeftRight, boolean drawUp){
+        hhandleControl(drawLeftRight, drawUp);
 
-        batch.begin();
+
         Sprite sprite = jt;
         for (int i = 0; i < 3; i++) {
-            switch (i){
-                case 0:
-                    sprite = j1 ? jtAct : jt;
-                    sprite.setBounds(jT1.getX(), jT1.getY(), jT1.getWidth(), jT1.getHeight());
-                    sprite.setOriginCenter();
-                    sprite.setRotation(90);
-                    break;
-                case 1:
-                    sprite = j2 ? jtAct : jt;
-                    sprite.setBounds(jT2.getX(), jT2.getY(), jT2.getWidth(), jT2.getHeight());
-                    sprite.setOriginCenter();
-                    sprite.setRotation(-90);
-                    break;
-                case 2:
-                    sprite = j3 ? jtAct : jt;
-                    sprite.setBounds(jT3.getX(), jT3.getY(), jT3.getWidth(), jT3.getHeight());
-                    sprite.setOriginCenter();
-                    sprite.setRotation(0);
-                    break;
+            final boolean isDraw = (drawLeftRight && i < 2) || (drawUp && i == 2);
+            if (isDraw){
+                switch (i){
+                    case 0:
+                        sprite = j1 ? jtAct : jt;
+                        sprite.setBounds(jT1.getX(), jT1.getY(), jT1.getWidth(), jT1.getHeight());
+                        sprite.setOriginCenter();
+                        sprite.setRotation(90);
+                        break;
+                    case 1:
+                        sprite = j2 ? jtAct : jt;
+                        sprite.setBounds(jT2.getX(), jT2.getY(), jT2.getWidth(), jT2.getHeight());
+                        sprite.setOriginCenter();
+                        sprite.setRotation(-90);
+                        break;
+                    case 2:
+                        sprite = j3 ? jtAct : jt;
+                        sprite.setBounds(jT3.getX(), jT3.getY(), jT3.getWidth(), jT3.getHeight());
+                        sprite.setOriginCenter();
+                        sprite.setRotation(0);
+                        break;
+                }
+                sprite.draw(batch);
             }
-            sprite.draw(batch);
         }
-        batch.end();
 
     }
 
     private static boolean lockH1, lockH2, lockH3;
-    private static void hhandleControl(){
+    private static void hhandleControl(boolean drawLeftRight, boolean drawUp){
         j1 = j2 = j3 = lockH1 = lockH2 = lockH3 = false;
 
 
@@ -107,17 +110,15 @@ public class Controller {
             if (Gdx.input.isTouched(i)){
                 final int x = Gdx.input.getX(i), y = Gdx.graphics.getHeight() - Gdx.input.getY(i);
 
-                j1 = CollisionDetector.isTouchDot(x, y, jT1) || lockH1;
+                j1 = (CollisionDetector.isTouchDot(x, y, jT1) || lockH1) && drawLeftRight;
                 if (j1) lockH1 = true;
-                j2 = CollisionDetector.isTouchDot(x, y, jT2) || lockH2;
+                j2 = (CollisionDetector.isTouchDot(x, y, jT2) || lockH2) && drawLeftRight;
                 if (j2) lockH2 = true;
-                j3 = CollisionDetector.isTouchDot(x, y, jT3) || lockH3;
+                j3 = (CollisionDetector.isTouchDot(x, y, jT3) || lockH3) && drawUp;
                 if (j3) lockH3 = true;
             }
         }
-
-        Main.DEBUG_VALUE1 = j1 + " " + j2 + " " + j3 + " " + lockH1 + " " + lockH2 + " " + lockH3;
-
+//        Main.DEBUG_VALUE1 = j1 + " " + j2 + " " + j3 + " " + lockH1 + " " + lockH2 + " " + lockH3;
     }
 
     public static boolean getLeft(){
@@ -138,6 +139,16 @@ public class Controller {
 
     public static void clearJump(){
         jump = false;
+    }
+
+    private static boolean isTestJump;
+    public static void testJump(){
+        if (isTestJump){
+            isTestJump = false;
+
+            jump = true;
+            isTrueJump = false;
+        }
     }
 
     public static void dispose() {

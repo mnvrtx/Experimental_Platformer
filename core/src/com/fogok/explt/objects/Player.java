@@ -1,7 +1,6 @@
 package com.fogok.explt.objects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -28,8 +27,6 @@ import com.fogok.explt.utils.Prefers;
 
 import java.util.Random;
 
-import sun.security.jgss.GSSManagerImpl;
-
 /**
  * Created by FOGOK on 01.12.2016 14:00.
  * Если ты это читаешь, то знай, что этот код хуже
@@ -42,6 +39,7 @@ public class Player {
     private Body body;
     private BodyDef bodyDef;
     private FixtureDef[] fixtureDef = new FixtureDef[2];
+
 
     private int POWERS;
 
@@ -64,6 +62,8 @@ public class Player {
         this.atlasLoader = atlasLoader;
 
         this.world = world;
+
+
 
         player = new Sprite(atlasLoader.getTG(AtlasLoader.OBJ_MAIN_CUBE));
         player.setBounds(TiledMapDrawer.SPAWNPOINT.getX(), TiledMapDrawer.SPAWNPOINT.getY(), TiledMapDrawer.ONECUBESIZE, TiledMapDrawer.ONECUBESIZE);
@@ -235,6 +235,7 @@ public class Player {
 
         if (!isDead){
             drawBlicks(batch);
+            calculateDrawingControl();
             handleControl();
         }
 
@@ -249,6 +250,25 @@ public class Player {
             batch.begin();
         }
     }
+
+
+    private void calculateDrawingControl(){
+        final int currentStory = StoryNarrator.getCurrentStory();
+        isDrawLeftRight = (currentStory > 15 && currentStory < 28) || (currentStory > 31 && currentStory < 40);
+        isDrawUp = (currentStory > 19 && currentStory < 28) || (currentStory > 31 && currentStory < 40);
+    }
+    private boolean isDrawLeftRight;
+    private boolean isDrawUp;
+
+    public boolean getIsDrawLeftRight(){
+        return isDrawLeftRight;
+    }
+
+    public boolean getIsDrawUp(){
+        return isDrawUp;
+    }
+
+
 
 
     private boolean isPutWhiteScreen;
@@ -326,6 +346,16 @@ public class Player {
             player.setScale(1f);
             body.setLinearVelocity(0f, 0f);
             body.setTransform(TiledMapDrawer.SPAWNPOINT.getX(), TiledMapDrawer.SPAWNPOINT.getY(), 0f);
+
+            player.setPosition(body.getPosition().x, body.getPosition().y);
+            final float posX = player.getX() + GMUtils.getNextX(getSize() / 2f, 45 + getRotation()),
+                    posY = player.getY() + GMUtils.getNextY(getSize() / 2f, 45 + getRotation());
+
+            Main.getPhysicCamera().position.set(posX, posY, 0);
+
+            StoryNarrator.setStory(3);
+
+            isPutWhiteScreen = true;
         }else{
             player.setScale(1f - itersDead / itersDeadMax);
             body.setLinearVelocity(0f, 0f);
@@ -412,8 +442,10 @@ public class Player {
             velX = body.getLinearVelocity().x;
         }
 
+        if (StoryNarrator.getCurrentStory() == 20)
+            Controller.testJump();
 
-        if (Controller.getJump() && !isLockJump){
+        if ((Controller.getJump()) && !isLockJump){
             Controller.clearJump();
 //            body.setAngularVelocity(-20f);
             float velYBody = body.getLinearVelocity().y;

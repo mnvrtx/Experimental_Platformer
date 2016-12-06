@@ -16,6 +16,11 @@ public class Prefers {
     /////// DO NOT CHANGE FINAL STRINGS
     public static final String KeySavePoint = "KeySavePoint"; //int
     public static final String KeyStateCube = "KeyStateCube";   //int
+    public static final String KeyStateStory = "KeyStateStory";   //int
+
+    public static final String KeyMusicEnabled = "KeyMusicEnabled";   //boolean
+    public static final String KeySoundEnabled = "KeySoundEnabled";   //boolean
+
 //    public static final String KeyFirstLaunch = "KeyFirstLaunch";   //boolean
     /////// DO NOT CHANGE FINAL STRINGS
 

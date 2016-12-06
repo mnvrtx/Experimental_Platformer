@@ -19,7 +19,7 @@ public class DesktopLauncher {
         }
 
 
-        config.fullscreen = false;
+        config.fullscreen = !issF;
         Main.ISPC = true;
 
 

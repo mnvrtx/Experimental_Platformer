@@ -26,6 +26,8 @@ public class AtlasLoader {
     public static final int OBJ_BLICK = 4;
     public static final int OBJ_J = 5;
     public static final int OBJ_JACT = 6;
+    public static final int OBJ_MUSIC = 7;
+    public static final int OBJ_SOUND = 8;
 
     ///
 
