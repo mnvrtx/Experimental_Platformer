@@ -31,6 +31,10 @@ public class TextBlock extends BaseObject {
         isBlackColor = blackColor;
     }
 
+    public boolean isBlackColor() {
+        return isBlackColor;
+    }
+
     public void setCustomCff(float customCff) {
         this.customCff = customCff;
         refreshBounds();

@@ -156,13 +156,16 @@ public class Player {
             }
         });
 
-        float densFill = body.getFixtureList().get(0).getDensity() + body.getFixtureList().get(1).getDensity();
+        iterssDead = iterssMax;
+//        float densFill = body.getFixtureList().get(0).getDensity() + body.getFixtureList().get(1).getDensity();
 //        Main.DEBUG_VALUE2 = "" + getSize() + " " + densFill;
     }
 
     private Random rnd = new Random();
     private float gravIt, gravMax = (float) rnd.nextInt(8) + 2f;
     private boolean isNormalGrav = true;
+
+    private float iterssDead, iterssMax = 0.7f;
 
     private float changControlIt, changControlMax = (float) rnd.nextInt(8) + 2f;
     private boolean isNormalControl = true;
@@ -384,6 +387,10 @@ public class Player {
 
             Main.getPhysicCamera().position.set(posX, posY, 0);
 
+            Controller.clearJump();
+
+            iterssDead = iterssMax;
+
             StoryNarrator.setStory(3);
 
             SoundCore.playSound(SoundCore.Sounds.Restart);
@@ -475,41 +482,47 @@ public class Player {
     private float velX;
     private final float velVelSpeed = 0.3f;
     private void handleControl(){
-        if (Controller.getIsMove()){
+        if (iterssDead == 0f){
 
-            if (isNormalControl != Controller.getLeft()){
-                if (velX < 10f * (1f / Math.sqrt(bodyDensity)))
-                    velX += velVelSpeed;
+            if (Controller.getIsMove()){
+
+                if (isNormalControl != Controller.getLeft()){
+                    if (velX < 10f * (1f / Math.sqrt(bodyDensity)))
+                        velX += velVelSpeed;
+                }
+                else{
+                    if (velX > -10f * (1f / Math.sqrt(bodyDensity)))
+                        velX -= velVelSpeed;
+                }
+
+                body.setLinearVelocity(velX, body.getLinearVelocity().y);
+            }else{
+                velX = body.getLinearVelocity().x;
             }
-            else{
-                if (velX > -10f * (1f / Math.sqrt(bodyDensity)))
-                    velX -= velVelSpeed;
-            }
 
-            body.setLinearVelocity(velX, body.getLinearVelocity().y);
-        }else{
-            velX = body.getLinearVelocity().x;
-        }
+            if (StoryNarrator.getCurrentStory() == 20)
+                Controller.testJump();
 
-        if (StoryNarrator.getCurrentStory() == 20)
-            Controller.testJump();
-
-        if ((Controller.getJump()) && !isLockJump){
-            Controller.clearJump();
+            if ((Controller.getJump()) && !isLockJump){
+                Controller.clearJump();
 //            body.setAngularVelocity(-20f);
-            float velYBody = body.getLinearVelocity().y;
-            if (velYBody < 0f)
-                velYBody = 0f;
-            body.applyLinearImpulse(0f,
-                    12 - velYBody,
-                    body.getPosition().x + player.getWidth() / 2f, body.getPosition().y + player.getWidth() / 2f, true);
+                float velYBody = body.getLinearVelocity().y;
+                if (velYBody < 0f)
+                    velYBody = 0f;
+                body.applyLinearImpulse(0f,
+                        12 - velYBody,
+                        body.getPosition().x + player.getWidth() / 2f, body.getPosition().y + player.getWidth() / 2f, true);
+            }
+
+            if (isLockJump)
+                Controller.clearJump();
+
+            if (body.getAngularVelocity() > 10f * getSize())
+                body.setAngularVelocity(10f * getSize());
+        }else{
+            iterssDead -= Gdx.graphics.getDeltaTime();
+            iterssDead = GMUtils.normalizeOneZero(iterssDead);
         }
-
-        if (isLockJump)
-            Controller.clearJump();
-
-        if (body.getAngularVelocity() > 10f * getSize())
-            body.setAngularVelocity(10f * getSize());
 
     }
 

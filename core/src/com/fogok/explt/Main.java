@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.fogok.explt.core.Controller;
 import com.fogok.explt.core.Handler;
 import com.fogok.explt.core.SoundCore;
@@ -52,9 +53,9 @@ public class Main extends ApplicationAdapter {
         SoundCore.init();
         UI.initializate();
 
-//        Prefers.putInt(Prefers.KeySavePoint, 5);
-//        Prefers.putInt(Prefers.KeyStateCube, 3);
-//        Prefers.putInt(Prefers.KeyStateStory, 2);
+        Prefers.putInt(Prefers.KeySavePoint, 0);
+        Prefers.putInt(Prefers.KeyStateCube, 0);
+        Prefers.putInt(Prefers.KeyStateStory, 0);
 
         StoryNarrator.init();
         ///
@@ -167,6 +168,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         Controller.dispose();
         SoundCore.disposeAll();
+        StoryNarrator.dispose();
         startScreen.dispose();
         batch.dispose();
         backBatch.dispose();

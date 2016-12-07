@@ -1,6 +1,10 @@
 package com.fogok.explt.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.fogok.explt.core.SoundCore;
 import com.fogok.explt.objects.uiwidgets.basewidgets.TextBlock;
@@ -18,6 +22,7 @@ public class StoryNarrator {
     private static int startText, endText, currentText, lastCurrentText;
     private static float showTime, showMax;
     private static boolean isTimedTicked;
+    private static Sprite blackCover;
 
     private static boolean isShow;
 
@@ -32,6 +37,16 @@ public class StoryNarrator {
         upGameText.setPositionToCenter();
         lastCurrentText = -1;
         isShow = true;
+        createBlackCover();
+    }
+
+    private static void createBlackCover(){
+        Pixmap pixmap = new Pixmap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.BLACK);
+        pixmap.fillRectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        blackCover = new Sprite(new Texture(pixmap));
+        pixmap.dispose();
     }
 
     public static void setStory(int k){
@@ -90,6 +105,9 @@ public class StoryNarrator {
     public static void drawAndNarrate(SpriteBatch batch){
         if (isShow){
             calcTime();
+            if (!upGameText.isBlackColor())
+                blackCover.draw(batch);
+
             upGameText.draw(batch);
         }
     }
@@ -135,6 +153,9 @@ public class StoryNarrator {
             }
 
             upGameText.setPositionToCenter();
+            final float otst = 10;
+            blackCover.setBounds(upGameText.getBounds().getX() - otst, upGameText.getBounds().getY() - otst, upGameText.getBounds().getWidth() + otst * 2, upGameText.getBounds().getHeight() + otst * 2);
+
             SoundCore.playSound(SoundCore.Sounds.Notify);
         }
         lastCurrentText = currentText;
@@ -144,4 +165,8 @@ public class StoryNarrator {
         return currentText;
     }
 
+
+    public static void dispose(){
+        blackCover.getTexture().dispose();
+    }
 }
