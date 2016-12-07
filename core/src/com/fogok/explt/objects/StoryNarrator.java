@@ -2,8 +2,10 @@ package com.fogok.explt.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.fogok.explt.core.SoundCore;
 import com.fogok.explt.objects.uiwidgets.basewidgets.TextBlock;
 import com.fogok.explt.utils.Localization;
+import com.fogok.explt.utils.Prefers;
 
 /**
  * Created by FOGOK on 05.12.2016 1:00.
@@ -22,10 +24,10 @@ public class StoryNarrator {
     private static TextBlock upGameText;
 
 
-    public static void init(int currentStory){
+    public static void init(){
 
         upGameText = new TextBlock(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() * 0.95f, Localization.getText(0));
-        setStory(currentStory);
+        setStory(0);
         upGameText.setCustomCff(0.23f);
         upGameText.setPositionToCenter();
         lastCurrentText = -1;
@@ -69,12 +71,20 @@ public class StoryNarrator {
                 break;
             case 9:
                 startText = 40;
-                endText = 46;
+                endText = 47;
                 break;
         }
         currentText = startText;
         isTimedTicked = false;
         showTime = 0f;
+    }
+
+    public static void setCurrentText(int currentText) {
+        StoryNarrator.currentText = currentText;
+    }
+
+    public static void setIsShow(boolean isShow) {
+        StoryNarrator.isShow = isShow;
     }
 
     public static void drawAndNarrate(SpriteBatch batch){
@@ -85,7 +95,7 @@ public class StoryNarrator {
     }
 
     private static void calcTime(){
-        if (currentText != 0){
+        if (currentText != 0 && currentText != 47){
             if (!isTimedTicked){
                 isTimedTicked = true;
                 showMax = Localization.getText(currentText).length() * 0.08f;
@@ -110,12 +120,22 @@ public class StoryNarrator {
             upGameText.setText(Localization.getText(currentText));
             upGameText.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() * 0.95f);
 
-            if (currentText < 9)
+            if (currentText < 9 || currentText > 39)
                 upGameText.setBlackColor(true);
             else
                 upGameText.setBlackColor(false);
 
+            if (currentText == 21)
+                Prefers.putInt(Prefers.KeyStateStory, 2);
+
+            if (currentText == 47){
+                Prefers.putInt(Prefers.KeySavePoint, 0);
+                Prefers.putInt(Prefers.KeyStateCube, 0);
+                Prefers.putInt(Prefers.KeyStateStory, 0);
+            }
+
             upGameText.setPositionToCenter();
+            SoundCore.playSound(SoundCore.Sounds.Notify);
         }
         lastCurrentText = currentText;
     }

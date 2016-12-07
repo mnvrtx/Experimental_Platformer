@@ -1,6 +1,7 @@
 package com.fogok.explt.objects.uiwidgets.buttons;
 
 
+import com.fogok.explt.core.SoundCore;
 import com.fogok.explt.utils.Prefers;
 
 import static com.fogok.explt.core.SoundCore.MUSIC_ENABLED;
@@ -29,8 +30,10 @@ public class ButtonActions {
             case MUSIC:
                 MUSIC_ENABLED = !MUSIC_ENABLED;
                 Prefers.putBool(Prefers.KeyMusicEnabled, MUSIC_ENABLED);
+                SoundCore.mainMenuMusicSet();
                 break;
         }
+        SoundCore.playSound(SoundCore.Sounds.Notify);
     }
 
 }

@@ -35,6 +35,7 @@ public class TiledMapDrawer {
     private Rectangle deadRectangles[];
     private Rectangle savesRectangles[];
     private Rectangle powerRectangles[];
+    private Rectangle storyRectangles[];
 
     private Boolean powersCollected[] = new Boolean[]{false, false, false};
 
@@ -68,7 +69,7 @@ public class TiledMapDrawer {
 
         MapLayer collisionObjectLayer = tiledMap.getLayers().get("l2");
         MapObjects objects = collisionObjectLayer.getObjects();
-        int maxMapObjects = 0, maxDeadRectangleObjects = 0, maxSavesRectangles = 0, maxPowerRectangles = 0;
+        int maxMapObjects = 0, maxDeadRectangleObjects = 0, maxSavesRectangles = 0, maxPowerRectangles = 0, maxStoryRectangles = 0;
         for (int i = 0; i < objects.getCount(); i++) {
             if (objects.get(i).getName() == null)
                 maxMapObjects++;
@@ -78,12 +79,15 @@ public class TiledMapDrawer {
                 maxSavesRectangles++;
             else if (objects.get(i).getName().equals("q"))
                 maxPowerRectangles++;
+            else if (objects.get(i).getName().equals("r"))
+                maxStoryRectangles++;
         }
         mapObjects = new Rectangle[maxMapObjects];
         deadRectangles = new Rectangle[maxDeadRectangleObjects];
         savesRectangles = new Rectangle[maxSavesRectangles];
         powerRectangles = new Rectangle[maxPowerRectangles];
-        int itersMap = 0, itersDead = 0, itersSaves = 0, itersPowers = 0;
+        storyRectangles = new Rectangle[maxStoryRectangles];
+        int itersMap = 0, itersDead = 0, itersSaves = 0, itersPowers = 0, itersStory = 0;
         for (int i = 0; i < objects.getCount(); i++) {
             if (objects.get(i).getName() == null){
                 mapObjects[itersMap] = ((RectangleMapObject) objects.get(i)).getRectangle();
@@ -93,7 +97,7 @@ public class TiledMapDrawer {
                 deadRectangles[itersDead] = ((RectangleMapObject) objects.get(i)).getRectangle();
                 deadRectangles[itersDead].set(deadRectangles[itersDead].x * finCff, deadRectangles[itersDead].y * finCff, deadRectangles[itersDead].width * finCff, deadRectangles[itersDead].height * finCff);
                 itersDead++;
-            }else if (objects.get(i).getName().equals("s")){
+            }else if (objects.get(i).getName().equals("s")){    //6
                 savesRectangles[itersSaves] = ((RectangleMapObject) objects.get(i)).getRectangle();
                 savesRectangles[itersSaves].set(savesRectangles[itersSaves].x * finCff, savesRectangles[itersSaves].y * finCff, savesRectangles[itersSaves].width * finCff, savesRectangles[itersSaves].height * finCff);
                 itersSaves++;
@@ -101,6 +105,10 @@ public class TiledMapDrawer {
                 powerRectangles[itersPowers] = ((RectangleMapObject) objects.get(i)).getRectangle();
                 powerRectangles[itersPowers].set(powerRectangles[itersPowers].x * finCff, powerRectangles[itersPowers].y * finCff, powerRectangles[itersPowers].width * finCff, powerRectangles[itersPowers].height * finCff);
                 itersPowers++;
+            }else if (objects.get(i).getName().equals("r")){
+                storyRectangles[itersStory] = ((RectangleMapObject) objects.get(i)).getRectangle();
+                storyRectangles[itersStory].set(storyRectangles[itersStory].x * finCff, storyRectangles[itersStory].y * finCff, storyRectangles[itersStory].width * finCff, storyRectangles[itersStory].height * finCff);
+                itersStory++;
             }
         }
 
@@ -212,6 +220,10 @@ public class TiledMapDrawer {
 
     public Rectangle[] getSavesRectangles() {
         return savesRectangles;
+    }
+
+    public Rectangle[] getStoryRectangles() {
+        return storyRectangles;
     }
 
     //    private void drawRects(){

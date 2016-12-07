@@ -2,16 +2,12 @@ package com.fogok.explt;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.fogok.explt.core.Controller;
 import com.fogok.explt.core.Handler;
 import com.fogok.explt.core.SoundCore;
@@ -56,11 +52,11 @@ public class Main extends ApplicationAdapter {
         SoundCore.init();
         UI.initializate();
 
-        Prefers.putInt(Prefers.KeySavePoint, 0);
-        Prefers.putInt(Prefers.KeyStateCube, 0);
-//        Prefers.putInt(Prefers.KeyStateStory, 0);
+//        Prefers.putInt(Prefers.KeySavePoint, 5);
+//        Prefers.putInt(Prefers.KeyStateCube, 3);
+//        Prefers.putInt(Prefers.KeyStateStory, 2);
 
-        StoryNarrator.init(Prefers.getInt(Prefers.KeyStateStory));
+        StoryNarrator.init();
         ///
 
         //initCore
@@ -72,27 +68,32 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void render () {
         //natives
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
 
 
         if (startScreen.getStart()){
-            backBatch.begin();
-            back.draw(backBatch);
-            backBatch.end();
-            ///
-            physicCamera.update();
-            batch.setProjectionMatrix(physicCamera.combined);
-            batch.begin();
-            handler.handle(batch, controllerBatch);
-            batch.end();
-            ///
-            controllerBatch.begin();
-            Controller.drawControl(controllerBatch, handler.getIsDrawLeftRight(), handler.getIsDrawUp());
-            if (!startScreen.isEndedH())
-                startScreen.draw(controllerBatch);
+            if (StoryNarrator.getCurrentStory() < 40){
+                backBatch.begin();
+                back.draw(backBatch);
+                backBatch.end();
+                ///
+                physicCamera.update();
+                batch.setProjectionMatrix(physicCamera.combined);
+                batch.begin();
+                handler.handle(batch, controllerBatch);
+                batch.end();
+                ///
+                controllerBatch.begin();
+                Controller.drawControl(controllerBatch, handler.getIsDrawLeftRight(), handler.getIsDrawUp());
+                if (!startScreen.isEndedH())
+                    startScreen.draw(controllerBatch);
+            }else{
+
+                controllerBatch.begin();
+            }
         }
         else{
             controllerBatch.begin();
@@ -165,6 +166,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         Controller.dispose();
+        SoundCore.disposeAll();
         startScreen.dispose();
         batch.dispose();
         backBatch.dispose();

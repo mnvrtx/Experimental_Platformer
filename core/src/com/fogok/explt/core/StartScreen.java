@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.fogok.explt.objects.StoryNarrator;
 import com.fogok.explt.objects.uiwidgets.basewidgets.TextBlock;
 import com.fogok.explt.objects.uiwidgets.buttons.Button;
 import com.fogok.explt.objects.uiwidgets.buttons.ButtonActions;
 import com.fogok.explt.utils.GMUtils;
 import com.fogok.explt.utils.Localization;
+import com.fogok.explt.utils.Prefers;
 
 /**
  * Created by FOGOK on 06.12.2016 1:46.
@@ -34,10 +34,11 @@ public class StartScreen {
         soundB = new Button(atlasLoader, ButtonActions.All.SOUND, otst, otst, size, size);
         musicB = new Button(atlasLoader, ButtonActions.All.MUSIC, Gdx.graphics.getWidth() - otst - size, otst, size, size);
 
-        startGameText = new TextBlock(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, Localization.getText(47));
+        startGameText = new TextBlock(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, Localization.getText(48));
         startGameText.setPositionToCenter();
 
         createWhiteScreen();
+        SoundCore.playMusic(SoundCore.Musics.MainMenu);
     }
 
     private boolean isTouched = false;
@@ -49,7 +50,7 @@ public class StartScreen {
             );  ///определяем,  касается ли палец кнопки или нет
 
         }else{              //при отпускании кнопки
-            if (isTouched)      ///если при отпускании кнопки палец находился на кнопке, то выполняем действие
+            if (isTouched && !isStartedStart)      ///если при отпускании кнопки палец находился на кнопке, то выполняем действие
                 activateGame();
 
             isTouched = false;  //делаем так, чтобы действие не выполнилось ещё раз
@@ -58,7 +59,17 @@ public class StartScreen {
 
     private void activateGame(){
         isStartedStart = true;
-        StoryNarrator.setStory(1);
+        SoundCore.playSound(SoundCore.Sounds.Notify);
+        playSoundRestart = false;
+        if (Prefers.getInt(Prefers.KeyStateStory) == 0)
+            StoryNarrator.setStory(1);
+        else{
+            itersWhiteScreen2 = 1f;
+            StoryNarrator.setCurrentText(22);
+            StoryNarrator.setIsShow(false);
+            isStart = true;
+
+        }
     }
 
 
@@ -80,6 +91,7 @@ public class StartScreen {
     }
 
     private float itersWhiteScreen2 = 0f;
+    private boolean playSoundRestart;
     private void drawWhiteScreen2(SpriteBatch batch){
         float alpha = GMUtils.normalizeOneZero(itersWhiteScreen2);
         whiteScreen.setAlpha(alpha);
@@ -88,9 +100,22 @@ public class StartScreen {
         if (isStartedStart)
             itersWhiteScreen2 += Gdx.graphics.getDeltaTime();
 
+
+
         if (itersWhiteScreen2 > 1f){
             itersWhiteScreen2 = 1f;
+            SoundCore.stopMusic(SoundCore.Musics.MainMenu);
+            SoundCore.setVolume(1f);
+            SoundCore.playMusic(SoundCore.Musics.Game);
             isStart = true;
+        }else{
+//            if (!playSoundRestart && isStartedStart){
+//                SoundCore.setVolume(1f);
+//                SoundCore.playSound(SoundCore.Sounds.Restart);
+//                playSoundRestart = true;
+//            }
+            SoundCore.setVolume(1f - itersWhiteScreen2);
+
         }
     }
 
@@ -103,8 +128,25 @@ public class StartScreen {
         if (itersWhiteScreen2 == 1f)
             itersWhiteScreen -= Gdx.graphics.getDeltaTime();
 
+
+
         if (itersWhiteScreen < 0f){
             itersWhiteScreen = 0f;
+            if (!SoundCore.getGame().isPlaying()){
+                SoundCore.stopMusic(SoundCore.Musics.MainMenu);
+                SoundCore.setVolume(1f);
+                SoundCore.playMusic(SoundCore.Musics.Game);
+                SoundCore.playSound(SoundCore.Sounds.Restart);
+            }
+        }else{
+            if (!SoundCore.getGame().isPlaying()){
+                SoundCore.setVolume(1f - itersWhiteScreen2);
+            }
+            if (!playSoundRestart && StoryNarrator.getCurrentStory() > 8){
+                SoundCore.setVolume(1f);
+                SoundCore.playSound(SoundCore.Sounds.Restart);
+                playSoundRestart = true;
+            }
         }
     }
 

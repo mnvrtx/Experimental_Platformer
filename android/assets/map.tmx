@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-up" width="500" height="51" tilewidth="90" tileheight="90" nextobjectid="546">
+<map version="1.0" orientation="orthogonal" renderorder="left-up" width="500" height="51" tilewidth="90" tileheight="90" nextobjectid="554">
  <tileset firstgid="1" name="tileSet" tilewidth="90" tileheight="90" spacing="2" tilecount="121" columns="11">
   <image source="tileAtlas/tiledMap.png" width="1024" height="1024"/>
  </tileset>
@@ -400,5 +400,8 @@
   <object id="542" x="10800" y="4140" width="90" height="90"/>
   <object id="544" x="12150" y="4140" width="90" height="90"/>
   <object id="545" x="16290" y="4140" width="90" height="90"/>
+  <object id="548" name="r" x="3510" y="180" width="180" height="720"/>
+  <object id="549" name="r" x="3150" y="1260" width="360" height="630"/>
+  <object id="551" name="r" x="25830" y="3510" width="90" height="720"/>
  </objectgroup>
 </map>

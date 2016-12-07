@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.fogok.explt.Main;
 import com.fogok.explt.core.AtlasLoader;
 import com.fogok.explt.core.Controller;
+import com.fogok.explt.core.SoundCore;
 import com.fogok.explt.core.TiledMapDrawer;
 import com.fogok.explt.utils.CollisionDetector;
 import com.fogok.explt.utils.GMUtils;
@@ -47,6 +48,7 @@ public class Player {
     private Rectangle[] deadRectangles;
     private Rectangle[] powerRectangles;
     private Rectangle[] savesRectangles;
+    private Rectangle[] storyRectangles;
     private Boolean[] powersCollected;
     private World world;
 
@@ -58,6 +60,7 @@ public class Player {
         powerRectangles = tiledMapDrawer.getPowerRectangles();
         savesRectangles = tiledMapDrawer.getSavesRectangles();
         powersCollected = tiledMapDrawer.getPowersCollected();
+        storyRectangles = tiledMapDrawer.getStoryRectangles();
 
         this.atlasLoader = atlasLoader;
 
@@ -93,6 +96,7 @@ public class Player {
     }
 
     private float bodyDensity;
+    private boolean playSoundCollision = true;
     private void createBox2D(World world){
         bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -122,17 +126,23 @@ public class Player {
         
         body.createFixture(fixtureDef[0]);
         body.createFixture(fixtureDef[1]);
+        body.setUserData(1);
 
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
                 if (body.getLinearVelocity().y < 0f || body.getLinearVelocity().y == 0f)
                     Controller.setIsTrueJump();
+
+                playSoundCollision = true;
             }
 
             @Override
             public void endContact(Contact contact) {
-
+                if (playSoundCollision) {
+                    playSoundCollision = false;
+//                    SoundCore.playSound(SoundCore.Sounds.Stone, false);
+                }
             }
 
             @Override
@@ -236,6 +246,7 @@ public class Player {
         if (!isDead){
             drawBlicks(batch);
             calculateDrawingControl();
+            calculateStoryNarr();
             handleControl();
         }
 
@@ -251,11 +262,31 @@ public class Player {
         }
     }
 
+    private void calculateStoryNarr(){
+        float getX =  player.getX() + GMUtils.getNextX(getSize() / 2f, 45 + (int) player.getRotation()),
+                getY =  player.getY() + GMUtils.getNextY(getSize() / 2f, 45 + (int) player.getRotation());
+        for (int i = 0; i < storyRectangles.length; i++) {
+            if (CollisionDetector.isTouchDot(getX, getY, storyRectangles[i])){
+                switch (i){
+                    case 0:
+                        StoryNarrator.setStory(2);
+                        break;
+                    case 1:
+                        StoryNarrator.setStory(4);
+                        break;
+                    case 2:
+                        StoryNarrator.setStory(8);
+                        break;
+                }
+                storyRectangles[i].setY(4590f);
+            }
+        }
+    }
 
     private void calculateDrawingControl(){
         final int currentStory = StoryNarrator.getCurrentStory();
-        isDrawLeftRight = (currentStory > 15 && currentStory < 28) || (currentStory > 31 && currentStory < 40);
-        isDrawUp = (currentStory > 19 && currentStory < 28) || (currentStory > 31 && currentStory < 40);
+        isDrawLeftRight = (currentStory > 15 && currentStory < 28) || (currentStory > 30 && currentStory < 40);
+        isDrawUp = (currentStory > 19 && currentStory < 28) || (currentStory > 30 && currentStory < 40);
     }
     private boolean isDrawLeftRight;
     private boolean isDrawUp;
@@ -355,6 +386,8 @@ public class Player {
 
             StoryNarrator.setStory(3);
 
+            SoundCore.playSound(SoundCore.Sounds.Restart);
+
             isPutWhiteScreen = true;
         }else{
             player.setScale(1f - itersDead / itersDeadMax);
@@ -395,11 +428,17 @@ public class Player {
                 getY =  player.getY() + GMUtils.getNextY(getSize() / 2f, 45 + (int) player.getRotation());
         for (int i = 1; i < savesRectangles.length + 1; i++) {
             if (CollisionDetector.isTouchDot(getX, getY, savesRectangles[i - 1])){
-                if (TiledMapDrawer.SPAWNPNT != i){
-                    TiledMapDrawer.SPAWNPNT = i;
-                    Prefers.putInt(Prefers.KeySavePoint, i);
-                    isPutWhiteScreen = true;
-                    TiledMapDrawer.refreshSpawnPoint();
+                if (i != 6){
+                    if (TiledMapDrawer.SPAWNPNT != i) {
+                        TiledMapDrawer.SPAWNPNT = i;
+                        Prefers.putInt(Prefers.KeySavePoint, i);
+                        Prefers.putInt(Prefers.KeyStateCube, POWERS);
+                        isPutWhiteScreen = true;
+                        TiledMapDrawer.refreshSpawnPoint();
+                        SoundCore.playSound(SoundCore.Sounds.Restart);
+                    }
+                }else{
+                    StoryNarrator.setStory(9);
                 }
             }
         }
@@ -413,9 +452,19 @@ public class Player {
             if (CollisionDetector.isTouchDot(getX, getY, powerRectangles[i - 1])){
                 if (POWERS != i){
                     POWERS = i;
-                    Prefers.putInt(Prefers.KeyStateCube, i);
                     powersCollected[i - 1] = true;
                     completeDraw();
+                    switch (i - 1){
+                        case 0:
+                            StoryNarrator.setStory(5);
+                            break;
+                        case 1:
+                            StoryNarrator.setStory(6);
+                            break;
+                        case 2:
+                            StoryNarrator.setStory(7);
+                            break;
+                    }
                 }
             }
         }
