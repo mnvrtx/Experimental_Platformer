@@ -53,9 +53,9 @@ public class Main extends ApplicationAdapter {
         SoundCore.init();
         UI.initializate();
 
-        Prefers.putInt(Prefers.KeySavePoint, 0);
-        Prefers.putInt(Prefers.KeyStateCube, 0);
-        Prefers.putInt(Prefers.KeyStateStory, 0);
+//        Prefers.putInt(Prefers.KeySavePoint, 0);
+//        Prefers.putInt(Prefers.KeyStateCube, 0);
+//        Prefers.putInt(Prefers.KeyStateStory, 0);
 
         StoryNarrator.init();
         ///
